@@ -16,7 +16,7 @@ Apache AGE is:
 
 Powerful -- AGE adds graph database support to the already popular PostgreSQL database: PostgreSQL is used by organizations including Apple, Spotify, and NASA.
 Flexible -- AGE allows you to perform openCypher queries, which make complex queries much easier to write.
-Intelligent -- AGE allows you to perform graph queries that are the basis for many next level web services such as fraud & intrustion detection, master data management, product recommendations, identity and relationship management, experience personalization, knowledge management and more.
+Intelligent -- AGE allows you to perform graph queries that are the basis for many next level web services such as fraud & intrusion detection, master data management, product recommendations, identity and relationship management, experience personalization, knowledge management and more.
 
 ## Overview
 
@@ -27,7 +27,7 @@ Intelligent -- AGE allows you to perform graph queries that are the basis for ma
 
 ## Latest happenings
 
-- Latest Apache AGE release, [Apache AGE 0.7.0 (incubating)](https://github.com/apache/incubator-age/releases/tag/v0.7.0).
+- Latest Apache AGE release, [Apache AGE 1.0.0 (incubating)](https://github.com/apache/incubator-age/releases/tag/v1.0.0).
 - The latest Apache AGE documentation is now available at [here](https://age.apache.org/docs/master/index.html).
 - The roadmap has been updated, please check out the [Apache AGE website](http://age.apache.org/).
 - Send all your comments and inquiries to the user mailing list, users@age.apache.org.
@@ -35,8 +35,7 @@ Intelligent -- AGE allows you to perform graph queries that are the basis for ma
 
 ## Installation
 
-- [Use a docker image - official ver.](https://hub.docker.com/r/sorrell/agensgraph-extension)
-- [Use a docker image - alpine ver.](https://hub.docker.com/r/sorrell/agensgraph-extension-alpine)
+- [Use a docker image - official ver.](https://hub.docker.com/r/apache/age)
 - [Installing from source](https://age.apache.org/#)
 
 ## Graph visualization tool for AGE
