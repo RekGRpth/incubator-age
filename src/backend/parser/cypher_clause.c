@@ -273,8 +273,8 @@ static Query *transform_cypher_call_subquery(cypher_parsestate *cpstate,
                                           cypher_clause *clause);
 
 // transform
-#define PREV_CYPHER_CLAUSE_ALIAS    "_"
-#define CYPHER_OPT_RIGHT_ALIAS      "_R"
+#define PREV_CYPHER_CLAUSE_ALIAS AGE_DEFAULT_ALIAS_PREFIX"previous_cypher_clause"
+#define CYPHER_OPT_RIGHT_ALIAS AGE_DEFAULT_ALIAS_PREFIX"cypher_optional_right"
 #define transform_prev_cypher_clause(cpstate, prev_clause, add_rte_to_query) \
     transform_cypher_clause_as_subquery(cpstate, transform_cypher_clause, \
                                         prev_clause, NULL, add_rte_to_query)
@@ -5457,7 +5457,7 @@ static Expr *add_volatile_wrapper(Expr *node)
 {
     Oid oid;
 
-    oid = get_ag_func_oid("agtype_volatile_wrapper", 1, AGTYPEOID);
+    oid = get_ag_func_oid("agtype_volatile_wrapper", 1, ANYOID);
 
     return (Expr *)makeFuncExpr(oid, AGTYPEOID, list_make1(node), InvalidOid,
                                 InvalidOid, COERCE_EXPLICIT_CALL);
