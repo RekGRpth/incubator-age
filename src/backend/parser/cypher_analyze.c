@@ -59,7 +59,7 @@ static void build_explain_query(Query *query, Node *explain_node);
 
 static post_parse_analyze_hook_type prev_post_parse_analyze_hook;
 
-static void post_parse_analyze(ParseState *pstate, Query *query);
+static void post_parse_analyze(ParseState *pstate, Query *query, JumbleState *jstate);
 static bool convert_cypher_walker(Node *node, ParseState *pstate);
 static bool is_rte_cypher(RangeTblEntry *rte);
 static bool is_func_cypher(FuncExpr *funcexpr);
@@ -88,11 +88,11 @@ void post_parse_analyze_fini(void)
     post_parse_analyze_hook = prev_post_parse_analyze_hook;
 }
 
-static void post_parse_analyze(ParseState *pstate, Query *query)
+static void post_parse_analyze(ParseState *pstate, Query *query, JumbleState *jstate)
 {
     if (prev_post_parse_analyze_hook)
     {
-        prev_post_parse_analyze_hook(pstate, query);
+        prev_post_parse_analyze_hook(pstate, query, jstate);
     }
 
     /*
@@ -512,7 +512,7 @@ static void convert_cypher_to_subquery(RangeTblEntry *rte, ParseState *pstate)
     if (extra_node == NULL)
     {
         extra_node = llast(stmt);
-        list_delete_ptr(stmt, extra_node);
+        stmt = list_delete_ptr(stmt, extra_node);
     }
     else
     {
@@ -522,7 +522,7 @@ static void convert_cypher_to_subquery(RangeTblEntry *rte, ParseState *pstate)
                 (errcode(ERRCODE_INVALID_PARAMETER_VALUE),
                  errmsg("too many extra_nodes passed from parser")));
 
-        list_delete_ptr(stmt, temp);
+        stmt = list_delete_ptr(stmt, temp);
     }
 
     cancel_errpos_ecb(&ecb_state);
@@ -756,8 +756,16 @@ static Query *analyze_cypher_and_coerce(List *stmt, RangeTblFunction *rtfunc,
 
     pnsi = addRangeTableEntryForSubquery(pstate, subquery, makeAlias("_", NIL),
                                         lateral, true);
+
     rtindex = list_length(pstate->p_rtable);
     Assert(rtindex == 1); // rte is the only RangeTblEntry in pstate
+    if (rtindex !=1 )
+    {
+        ereport(ERROR,
+                (errcode(ERRCODE_DATATYPE_MISMATCH),
+                 errmsg("invalid value for rtindex")));
+    }
+
 
     addNSItemToQuery(pstate, pnsi, true, true, true);
     query->targetList = expandNSItemAttrs(pstate, pnsi, 0, -1);
