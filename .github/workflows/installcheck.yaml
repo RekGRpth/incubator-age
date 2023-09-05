@@ -30,7 +30,7 @@ jobs:
           ./configure --prefix=$HOME/pg15 CFLAGS="-std=gnu99 -ggdb -O0" --enable-cassert
           make install -j$(nproc) > /dev/null
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build
         id: build
