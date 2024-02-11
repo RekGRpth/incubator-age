@@ -1,15 +1,45 @@
+env:
+  GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
+  INPUTS_REPOSITORY: apache/age
+  INPUTS_BRANCH: ${{ github.job }}
 name: Merge
 on:
   schedule:
     - cron: '0 19 * * *'
   workflow_dispatch:
 jobs:
-  merge:
-    env:
-      GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
+  master:
     runs-on: ubuntu-latest
     steps:
       - uses: rekgrpth/git-clone-shell-action@v1
-      - env:
-          INPUTS_REPOSITORY: apache/incubator-age
-        uses: rekgrpth/git-fetch-upstream-merge-push-shell-action@v1
+      - uses: rekgrpth/git-fetch-upstream-merge-push-shell-action@v1
+  PG16:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: rekgrpth/git-clone-shell-action@v1
+      - uses: rekgrpth/git-fetch-upstream-merge-push-shell-action@v1
+  PG15:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: rekgrpth/git-clone-shell-action@v1
+      - uses: rekgrpth/git-fetch-upstream-merge-push-shell-action@v1
+  PG14:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: rekgrpth/git-clone-shell-action@v1
+      - uses: rekgrpth/git-fetch-upstream-merge-push-shell-action@v1
+  PG13:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: rekgrpth/git-clone-shell-action@v1
+      - uses: rekgrpth/git-fetch-upstream-merge-push-shell-action@v1
+  PG12:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: rekgrpth/git-clone-shell-action@v1
+      - uses: rekgrpth/git-fetch-upstream-merge-push-shell-action@v1
+  PG11:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: rekgrpth/git-clone-shell-action@v1
+      - uses: rekgrpth/git-fetch-upstream-merge-push-shell-action@v1
