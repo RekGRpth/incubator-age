@@ -87,7 +87,6 @@ static agtype_value *push_agtype_value_scalar(agtype_parse_state **pstate,
                                               agtype_value *scalar_val);
 static int compare_two_floats_orderability(float8 lhs, float8 rhs);
 static int get_type_sort_priority(enum agtype_value_type type);
-static void pfree_agtype_value_content(agtype_value* value);
 static void pfree_iterator_agtype_value_token(agtype_iterator_token token,
                                               agtype_value *agtv);
 
@@ -589,6 +588,88 @@ agtype_value *get_ith_agtype_value_from_container(agtype_container *container,
                       result);
 
     return result;
+}
+
+/*
+ * Get type of i-th value of an agtype array.
+ */
+enum agtype_value_type get_ith_agtype_value_type(agtype_container *container,
+                                                 uint32 i)
+{
+    enum agtype_value_type type;
+    uint32 nelements;
+    agtentry entry;
+
+    if (!AGTYPE_CONTAINER_IS_ARRAY(container))
+    {
+        ereport(ERROR, (errmsg("container is not an agtype array")));
+    }
+
+    nelements = AGTYPE_CONTAINER_SIZE(container);
+    if (i >= nelements)
+    {
+        ereport(ERROR, (errmsg("index out of bounds")));
+    }
+
+    entry = container->children[i];
+    switch ((entry)&AGTENTRY_TYPEMASK)
+    {
+    case AGTENTRY_IS_STRING:
+        type = AGTV_STRING;
+        break;
+    case AGTENTRY_IS_NUMERIC:
+        type = AGTV_NUMERIC;
+        break;
+    case AGTENTRY_IS_AGTYPE:
+    {
+        char *base_addr;
+        uint32 agt_header;
+        char *base;
+
+        base_addr = (char *)&container->children[nelements];
+        base = base_addr + INTALIGN(get_agtype_offset(container, i));
+        agt_header = *((uint32 *)base);
+
+        switch (agt_header)
+        {
+        case AGT_HEADER_INTEGER:
+            type = AGTV_INTEGER;
+            break;
+        case AGT_HEADER_FLOAT:
+            type = AGTV_FLOAT;
+            break;
+        case AGT_HEADER_VERTEX:
+            type = AGTV_VERTEX;
+            break;
+        case AGT_HEADER_EDGE:
+            type = AGTV_EDGE;
+            break;
+        case AGT_HEADER_PATH:
+            type = AGTV_PATH;
+            break;
+        default:
+            ereport(ERROR, (errmsg("unexpected agt_header type")));
+            break;
+        }
+        break;
+    }
+    case AGTENTRY_IS_BOOL_TRUE:
+        type = AGTV_BOOL;
+        break;
+    case AGTENTRY_IS_BOOL_FALSE:
+        type = AGTV_BOOL;
+        break;
+    case AGTENTRY_IS_NULL:
+        type = AGTV_NULL;
+        break;
+    case AGTENTRY_IS_CONTAINER:
+        type = AGTV_BINARY;
+        break;
+    default:
+        ereport(ERROR, (errmsg("unexpected agtentry type")));
+        break;
+    }
+    return type;
 }
 
 /*
@@ -2365,7 +2446,7 @@ void pfree_agtype_value(agtype_value* value)
  * of the passed agtype_value only. It does not deallocate
  * `value` itself.
  */
-static void pfree_agtype_value_content(agtype_value* value)
+void pfree_agtype_value_content(agtype_value* value)
 {
     int i;
 
